@@ -61,13 +61,65 @@ class TestRover < Test::Unit::TestCase
   def test_boundary_case
     #Test the outbound case
     Rover.mat_size(5,5)
-    rover = Rover.new(0, -1, 'N')
+
     assert_raise RuntimeError do
-      rover.check_boundary
+      rover = Rover.new(9, 8, 'N')
     end
-    rover = Rover.new(0, 0, 'N')
+
     assert_nothing_raised RuntimeError do
-      rover.check_boundary
+      rover = Rover.new(0, 0, 'N')
     end
   end
+
+  def test_bad_input_pos
+    Rover.mat_size(5,5)
+    #Test for Heading Direction
+    assert_raise RuntimeError do
+      rover = Rover.new(1, 1, 'M')
+    end
+
+    assert_nothing_raised RuntimeError do
+      rover = Rover.new(1, 1, 'E')
+    end
+
+    #Test for invalid input
+    assert_raise ArgumentError do
+      rover = Rover.new(1)
+    end
+
+    assert_raise RuntimeError do
+      rover = Rover.new('N', 1, 'W')
+    end
+
+    #Test for wrong Y co-ordinates input
+    assert_raise RuntimeError do
+      rover = Rover.new(1, -1, 'S')
+    end
+
+    assert_nothing_raised RuntimeError do
+      rover = Rover.new(1, 1, 'W')
+    end
+
+    #Test for wrong X co-ordinates input
+    assert_raise RuntimeError do
+      rover = Rover.new(-9, 1, 'N')
+    end
+
+    assert_nothing_raised RuntimeError do
+      rover = Rover.new(1, 1, 'W')
+    end
+  end
+
+  def test_bad_sequence_input
+    #Test for sequence input
+    rover = Rover.new(1, 2, 'W')
+    assert_raise RuntimeError do
+      rover.sequence("LMLMEW")
+    end
+
+    assert_nothing_raised RuntimeError do
+      rover.sequence("LMLM")
+    end
+  end
+  
 end
