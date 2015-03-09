@@ -2,11 +2,11 @@ class Rover
 
 	attr_accessor :x, :y, :head, :seq
 
-	def initialize(x, y, head)
+	def initialize(x ,y, head)
 		#Initialize Rover position
-		@x = x
-		@y = y
-		@head = head
+		@directions = ['N', 'E', 'S', 'W']
+		check_input(x, y, head)
+		
 	end
 
 	def Rover.mat_size(mat_x, mat_y)
@@ -22,29 +22,24 @@ class Rover
 
 	def sequence(seq)
 		#Initialize sequence and split it to array
-		@seq = seq.split(//)
+		if seq==nil
+			return false
+		end
+		@seq = seq.upcase.split(//)
+		check_sequence
 	end
 
 	def start
 		#start Rover
 		@seq.each do |pos|
-			if pos == 'M'
-				move
-			else
-				turn(pos)
-			end
+			pos == 'M' ? move : turn(pos)
 		end
 	end
 
 	def turn(new_dir)
-		directions = ['N', 'E', 'S', 'W']
-		index=directions.index(@head)
-		if new_dir == 'L'
-			index-=1
-		else
-			index+=1
-		end
-		@head=directions[index%4]
+		index=@directions.index(@head)
+		new_dir == 'L'? index-=1 : index+=1
+		@head=@directions[index%4]
 	end
 
 	def move
@@ -63,6 +58,30 @@ class Rover
 		if @x<0 or @x>@@mat_x or @y<0 or @y>@@mat_y
 			raise "Rover reached beyond plane."
 		end
+	end
+
+	def check_sequence
+		@seq.each do |s|
+			if s!='M' and s!='L' and s!='R'
+				raise "Invalid Move"
+			end
+		end
+	end
+
+	def check_head
+		if !@directions.include?(@head)
+			raise "Wrong Heading Direction"
+		end
+	end
+
+	def check_input(x, y, head)
+		@x = Integer(x) rescue nil
+		@y = Integer(y) rescue nil
+		@head = head.upcase rescue nil
+		raise "Invalid co-ordinates" if @x==nil or @y==nil
+		raise "No head" if @head==nil
+		check_head
+		check_boundary
 	end
 
 end
